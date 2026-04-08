@@ -83,6 +83,19 @@ void pan_by_key(const Arg arg) {
 }
 
 
+void win_move(const Arg arg) {
+    if (!cur || cur->f) return;
+
+    switch (arg.i) {
+        case 0: cur->cx -= WIN_MOVE_STEP; break;
+        case 1: cur->cx += WIN_MOVE_STEP; break;
+        case 2: cur->cy -= WIN_MOVE_STEP; break;
+        case 3: cur->cy += WIN_MOVE_STEP; break;
+    }
+    win_reposition(cur);
+}
+
+
 void win_focus(client *c) {
     cur = c;
     XSetInputFocus(d, cur->w, RevertToParent, CurrentTime);
@@ -256,52 +269,13 @@ static void viewport_center_on(client *c) {
     reproject_all();
 }
 
-void win_dir(const Arg arg) {
-    (void)arg;
+void win_cycle(const Arg arg) {
     if (!cur || list->next == list) return;
-
-    unsigned int cw, ch;
-    win_size(cur->w, &(int){0}, &(int){0}, &cw, &ch);
-    int cx = cur->cx + (int)cw / 2;
-    int cy = cur->cy + (int)ch / 2;
-
-    client *best = NULL;
-    int best_dist = INT_MAX;
-
-    for (client *c = list->next; ; c = c->next) {
-        if (c == cur) { if (c->next == list) break; continue; }
-
-        unsigned int tw, th;
-        win_size(c->w, &(int){0}, &(int){0}, &tw, &th);
-        int tx = c->cx + (int)tw / 2;
-        int ty = c->cy + (int)th / 2;
-
-        int dx = tx - cx;
-        int dy = ty - cy;
-
-        int valid = 0;
-        switch (arg.i) {
-            case 0: valid = dx < 0; break; /* left  */
-            case 1: valid = dx > 0; break; /* right */
-            case 2: valid = dy < 0; break; /* up    */
-            case 3: valid = dy > 0; break; /* down  */
-        }
-
-        if (valid) {
-            int dist = dx*dx + dy*dy;
-            if (dist < best_dist) { best_dist = dist; best = c; }
-        }
-
-        if (c->next == list) break;
-    }
-
-    if (best) {
-        win_focus(best);
-        viewport_center_on(cur);
-    }
+    client *c = arg.i ? cur->prev : cur->next;
+    if (!c) return;
+    win_focus(c);
+    viewport_center_on(cur);
 }
-
-
 void configure_request(XEvent *e) {
     XConfigureRequestEvent *ev = &e->xconfigurerequest;
 

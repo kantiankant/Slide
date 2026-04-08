@@ -6,11 +6,9 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-/* Iterate over all clients in the circular list */
 #define for_win for (client *c = list; c; c = c->next) \
                     if (c == list && c != list->prev ? (c = c->next, 1) : 1)
 
-/* Clean modifier mask (strip caps/numlock) */
 #define mod_clean(mask) ((mask) & ~(LockMask | (numlock)) & \
                          (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask))
 
@@ -29,10 +27,10 @@ typedef struct {
 typedef struct client {
     struct client *next, *prev;
     Window         w;
-    int            wx, wy;       /* saved geometry for fullscreen restore */
+    int            wx, wy;     
     unsigned int   ww, wh;
-    int            f;            /* fullscreen flag */
-    int            cx, cy;      /* canvas coordinates */
+    int            f;         
+    int            cx, cy;   
 } client;
 
 void button_press(XEvent *e);
@@ -50,10 +48,11 @@ void run(const Arg arg);
 void win_add(Window w);
 void win_del(Window w);
 void win_focus(client *c);
+void win_move(const Arg arg);
 void win_kill(const Arg arg);
 void win_center(const Arg arg);
 void win_fs(const Arg arg);
-void win_dir(const Arg arg);
+void win_cycle(const Arg arg);
 void win_size(Window w, int *x, int *y, unsigned int *width, unsigned int *height);
 
 void pan_by(int dx, int dy);
