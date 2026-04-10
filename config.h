@@ -6,7 +6,7 @@
 #define PAN_STEP 60 
 
 static const char *term[] = { "st", NULL };
-static const char *menu[] = { "dmenu_run", NULL };
+static const char *menu[] = { "rofi", "-show", "drun", NULL };
 
 static const char *vol_up[]    = { "sh", "-c", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%+ && VOL=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d\", $2 * 100}') && notify-send -h string:x-dunst-stack-tag:osd -h int:value:$VOL -t 1500 \"Volume\" \"$VOL%\" && kill -USR1 $(pidof kantbar)", NULL };
 static const char *vol_down[]  = { "sh", "-c", "wpctl set-volume @DEFAULT_AUDIO_SINK@ 1%- && VOL=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf \"%d\", $2 * 100}') && notify-send -h string:x-dunst-stack-tag:osd -h int:value:$VOL -t 1500 \"Volume\" \"$VOL%\" && kill -USR1 $(pidof kantbar)", NULL };
@@ -16,6 +16,8 @@ static const char *bri_down[]  = { "sh", "-c", "brightnessctl set 1%- && BRI=$(b
 static const char *quit[]      = { "pkill", "slide", NULL };
 const char* shot[]    = {"sh", "-c", "maim -s ~/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png", 0};
 static const char *file[]      = { "kitty", "-e", "yazi", NULL };
+static const char *ani[]      = { "st", "-e", "ani-cli", NULL };
+
 
 
 
@@ -23,6 +25,7 @@ static const char *file[]      = { "kitty", "-e", "yazi", NULL };
 static key keys[] = {
     { MOD,             XK_q,                    run,        {.com = term}     },
     { MOD,             XK_e,                    run,        {.com = file}     },
+    { MOD,             XK_r,                    run,        {.com = ani}     },
     { MOD,             XK_space,                run,        {.com = menu}     },
     { MOD,             XK_w,                    win_kill,   {0}               },
     { MOD,             XK_c,                    win_center, {0}               },
