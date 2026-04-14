@@ -478,3 +478,5 @@ int main(void) {
     while (1 && !XNextEvent(d, &ev))
         if (events[ev.type]) events[ev.type](&ev);
 }
+
+/*tung*/
