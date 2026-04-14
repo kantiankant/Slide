@@ -100,7 +100,6 @@ void win_move(const Arg arg) {
 void win_focus(client *c) {
     cur = c;
     XSetInputFocus(d, cur->w, RevertToParent, CurrentTime);
-    XRaiseWindow(d, cur->w);
 }
 
 
