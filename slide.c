@@ -1,4 +1,5 @@
 #include <X11/Xlib.h>
+#include <X11/Xcursor/Xcursor.h>
 #include <X11/Xatom.h>
 #include <X11/XF86keysym.h>
 #include <X11/keysym.h>
@@ -470,7 +471,8 @@ int main(void) {
         sizeof(supported) / sizeof(Atom));
 
     XSelectInput(d,  root, SubstructureRedirectMask);
-    XDefineCursor(d, root, XCreateFontCursor(d, 68));
+    Cursor cursor = XcursorLibraryLoadCursor(d, "left_ptr");
+    XDefineCursor(d, root, cursor);
     input_grab(root);
 
     while (1 && !XNextEvent(d, &ev))

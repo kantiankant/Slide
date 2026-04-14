@@ -15,8 +15,10 @@ static const char *bri_up[]    = { "sh", "-c", "brightnessctl set 1%+ && BRI=$(b
 static const char *bri_down[]  = { "sh", "-c", "brightnessctl set 1%- && BRI=$(brightnessctl get) && MAX=$(brightnessctl max) && VAL=$((BRI * 100 / MAX)) && notify-send -h string:x-dunst-stack-tag:osd -h int:value:$VAL -t 1500 \"Brightness\" \"$VAL%\" && kill -USR1 $(pidof kantbar)", NULL };
 static const char *quit[]      = { "pkill", "slide", NULL };
 const char* shot[]    = {"sh", "-c", "maim -s ~/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png", 0};
-static const char *file[]      = { "kitty", "-e", "yazi", NULL };
+static const char *file[]      = { "wezterm", "-e", "yazi", NULL };
 static const char *ani[]      = { "st", "-e", "ani-cli", NULL };
+static const char *mus[]      = { "st", "-e", "cmus", NULL };
+
 
 
 
@@ -25,7 +27,8 @@ static const char *ani[]      = { "st", "-e", "ani-cli", NULL };
 static key keys[] = {
     { MOD,             XK_q,                    run,        {.com = term}     },
     { MOD,             XK_e,                    run,        {.com = file}     },
-    { MOD,             XK_r,                    run,        {.com = ani}     },
+    { MOD,             XK_r,                    run,        {.com = mus}      },
+    { MOD|ShiftMask,   XK_r,    	        run,        {.com = ani}      },
     { MOD,             XK_space,                run,        {.com = menu}     },
     { MOD,             XK_w,                    win_kill,   {0}               },
     { MOD,             XK_c,                    win_center, {0}               },
