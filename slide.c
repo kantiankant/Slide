@@ -18,7 +18,7 @@ static unsigned int ww, wh;
 static int          vx = 0, vy = 0;
 
 static int          panning = 0;
-static int          pan_start_x, pan_start_y;   
+static int          pan_start_x, pan_start_y;
 static int          pan_origin_vx, pan_origin_vy;
 
 static Display      *d;
@@ -76,13 +76,28 @@ void pan_by(int dx, int dy) {
 
 void pan_by_key(const Arg arg) {
     switch (arg.i) {
-        case 0: pan_by(-PAN_STEP, 0); break; /* Left  */
-        case 1: pan_by( PAN_STEP, 0); break; /* Right */
-        case 2: pan_by(0, -PAN_STEP); break; /* Up    */
-        case 3: pan_by(0,  PAN_STEP); break; /* Down  */
+        case 0: pan_by(-PAN_STEP, 0); break;
+        case 1: pan_by( PAN_STEP, 0); break;
+        case 2: pan_by(0, -PAN_STEP); break;
+        case 3: pan_by(0,  PAN_STEP); break;
     }
 }
 
+static void viewport_follow(client *c) {
+    unsigned int cw, ch;
+    win_size(c->w, &(int){0}, &(int){0}, &cw, &ch);
+
+    int sx = to_screen_x(c->cx);
+    int sy = to_screen_y(c->cy);
+    int margin = WIN_MOVE_STEP;
+
+    if (sx < margin)                    vx += sx - margin;
+    if (sy < margin)                    vy += sy - margin;
+    if (sx + (int)cw > sw - margin)     vx += sx + (int)cw - sw + margin;
+    if (sy + (int)ch > sh - margin)     vy += sy + (int)ch - sh + margin;
+
+    reproject_all();
+}
 
 void win_move(const Arg arg) {
     if (!cur || cur->f) return;
@@ -94,6 +109,7 @@ void win_move(const Arg arg) {
         case 3: cur->cy += WIN_MOVE_STEP; break;
     }
     win_reposition(cur);
+    viewport_follow(cur); 
 }
 
 
@@ -120,7 +136,6 @@ void notify_enter(XEvent *e) {
 void notify_motion(XEvent *e) {
     while (XCheckTypedEvent(d, MotionNotify, e));
 
-    /* Panning: Super+Shift+RightButton drag */
     if (panning) {
         int dx = e->xbutton.x_root - pan_start_x;
         int dy = e->xbutton.y_root - pan_start_y;
@@ -136,7 +151,7 @@ void notify_motion(XEvent *e) {
     int yd = e->xbutton.y_root - mouse.y_root;
 
     if (mouse.button == 1) {
-        cur->cx = wx + xd + vx;   
+        cur->cx = wx + xd + vx;
         cur->cy = wy + yd + vy;
         win_reposition(cur);
     } else if (mouse.button == 3 && !panning) {
@@ -160,9 +175,9 @@ void key_press(XEvent *e) {
 void button_press(XEvent *e) {
     if (e->xbutton.button == 3 &&
         (mod_clean(e->xbutton.state) == mod_clean(MOD | ShiftMask))) {
-        panning      = 1;
-        pan_start_x  = e->xbutton.x_root;
-        pan_start_y  = e->xbutton.y_root;
+        panning       = 1;
+        pan_start_x   = e->xbutton.x_root;
+        pan_start_y   = e->xbutton.y_root;
         pan_origin_vx = vx;
         pan_origin_vy = vy;
         XGrabPointer(d, root, True,
@@ -276,6 +291,7 @@ void win_cycle(const Arg arg) {
     win_focus(c);
     viewport_center_on(cur);
 }
+
 void configure_request(XEvent *e) {
     XConfigureRequestEvent *ev = &e->xconfigurerequest;
 
